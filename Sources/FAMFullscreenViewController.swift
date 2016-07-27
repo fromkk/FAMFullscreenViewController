@@ -93,6 +93,16 @@ public protocol FAMFullscreenViewControllerDataSource: class {
      */
     func fullscreenViewController(viewController: FAMFullscreenViewController, thumbnailImageForIndexPath indexPath: NSIndexPath) -> UIImage?
     /**
+     adjust content offset with rect
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter rect:           CGRect
+
+     - returns: CGRect
+     */
+    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect
+
+    /**
      called if changed displaying indexPath
 
      - parameter viewController: FAMFullscreenMainViewController
@@ -175,6 +185,10 @@ extension FAMFullscreenViewController: UIViewControllerTransitioningDelegate {
 extension FAMFullscreenViewController: FAMFullscreenTransitionDelegate {
     public func transitionFromRect(transiion: FAMFullscreenTransition) -> CGRect {
         return self.fullscreenDelegate?.fullscreenViewController(self, rectForIndexPath: self.selectedIndexPath) ?? CGRect.zero
+    }
+
+    public func adjustContentOffset(rect: CGRect) -> CGRect {
+        return self.fullscreenDelegate?.fullscreenViewController(self, adjustContentOffsetWithRect: rect, withIndexPath: self.selectedIndexPath) ?? CGRect.zero
     }
 
     public func transitionImage(transition: FAMFullscreenTransition) -> UIImage? {

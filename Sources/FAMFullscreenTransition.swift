@@ -25,6 +25,7 @@ import UIKit
 public protocol FAMFullscreenTransitionDelegate: class {
     func transitionFromRect(transiion: FAMFullscreenTransition) -> CGRect
     func transitionImage(transition: FAMFullscreenTransition) -> UIImage?
+    func adjustContentOffset(rect: CGRect) -> CGRect
 }
 
 public class FAMFullscreenTransition: NSObject {
@@ -34,7 +35,7 @@ public class FAMFullscreenTransition: NSObject {
         super.init()
     }
 
-    public var delegate: FAMFullscreenTransitionDelegate?
+    public var delegate: FAMFullscreenTransitionDelegate!
     private lazy var imageView: UIImageView = {
         let imageView: UIImageView = UIImageView()
         imageView.clipsToBounds = true
@@ -70,8 +71,8 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             toView.alpha = 0.0
             containerView.addSubview(self.imageView)
 
-            self.imageView.image = self.delegate?.transitionImage(self)
-            self.imageView.frame = self.delegate?.transitionFromRect(self) ?? CGRect.zero
+            self.imageView.image = self.delegate.transitionImage(self)
+            self.imageView.frame = self.delegate.transitionFromRect(self) ?? CGRect.zero
 
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
@@ -85,12 +86,14 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
         } else {
             containerView.addSubview(self.imageView)
 
-            self.imageView.image = self.delegate?.transitionImage(self)
+            self.imageView.image = self.delegate.transitionImage(self)
             self.imageView.frame = self.toFrame
 
             fromView.alpha = 0.0
+
+            let fromRect: CGRect = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self))
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
-                self.imageView.frame = self.delegate?.transitionFromRect(self) ?? CGRect.zero
+                self.imageView.frame = fromRect
             }, completion: { [unowned self] (finished: Bool) in
                 if finished {
                     self.imageView.removeFromSuperview()

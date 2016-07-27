@@ -226,6 +226,17 @@ extension ViewController: FAMFullscreenViewControllerDelegate {
         return self.collectionView.convertRect(layoutAttribute.frame, toView: nil)
     }
 
+    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect {
+        let visibleRect: CGRect = CGRect(origin: self.collectionView.contentOffset, size: self.collectionView.bounds.size)
+        if visibleRect.contains(rect) {
+            return rect
+        }
+
+        self.collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: visibleRect.origin.y > rect.origin.y ? UICollectionViewScrollPosition.Top : UICollectionViewScrollPosition.Bottom, animated: false)
+
+        return self.fullscreenViewController(viewController, rectForIndexPath: indexPath)
+    }
+
     func fullscreenViewController(viewController: FAMFullscreenViewController, thumbnailImageForIndexPath indexPath: NSIndexPath) -> UIImage? {
         guard let cell: ViewControllerCell = self.collectionView.cellForItemAtIndexPath(indexPath) as? ViewControllerCell else {
             return nil
