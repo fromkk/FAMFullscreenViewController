@@ -11,6 +11,15 @@ import UIKit
 @objc public enum FAMFullscreenTransitionDirection: Int {
     case Open
     case Close
+
+    public func duration() -> NSTimeInterval {
+        switch self {
+        case .Open:
+            return 0.35
+        case .Close:
+            return 0.5
+        }
+    }
 }
 
 public protocol FAMFullscreenTransitionDelegate: class {
@@ -19,10 +28,6 @@ public protocol FAMFullscreenTransitionDelegate: class {
 }
 
 public class FAMFullscreenTransition: NSObject {
-    private enum Constants {
-        static let duration: NSTimeInterval = 0.33
-    }
-
     public var direction: FAMFullscreenTransitionDirection
     public init(direction: FAMFullscreenTransitionDirection) {
         self.direction = direction
@@ -47,7 +52,7 @@ public class FAMFullscreenTransition: NSObject {
 
 extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
     public func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        return Constants.duration
+        return self.direction.duration()
     }
 
     public func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
@@ -68,7 +73,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             self.imageView.image = self.delegate?.transitionImage(self)
             self.imageView.frame = self.delegate?.transitionFromRect(self) ?? CGRect.zero
 
-            UIView.animateWithDuration(Constants.duration, animations: { [unowned self] in
+            UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
             }, completion: { [unowned self] (finished: Bool) in
                 if finished {
@@ -84,7 +89,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             self.imageView.frame = self.toFrame
 
             fromView.alpha = 0.0
-            UIView.animateWithDuration(Constants.duration, animations: { [unowned self] in
+            UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.delegate?.transitionFromRect(self) ?? CGRect.zero
             }, completion: { [unowned self] (finished: Bool) in
                 if finished {
