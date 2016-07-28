@@ -13,12 +13,7 @@ import UIKit
     case Close
 
     public func duration() -> NSTimeInterval {
-        switch self {
-        case .Open:
-            return 0.35
-        case .Close:
-            return 0.5
-        }
+        return 0.33
     }
 }
 
@@ -37,7 +32,7 @@ public class FAMFullscreenTransition: NSObject {
     }
 
     public var delegate: FAMFullscreenTransitionDelegate!
-    private lazy var imageView: UIImageView = {
+    lazy var imageView: UIImageView = {
         let imageView: UIImageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = UIViewContentMode.ScaleAspectFill
@@ -55,6 +50,10 @@ public class FAMFullscreenTransition: NSObject {
     public lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = {
         UIPercentDrivenInteractiveTransition()
     }()
+
+    private var fromFrame: CGRect = CGRect.zero
+    private var finishClosure: () -> Void = {}
+    private var cancelClosure: () -> Void = {}
 }
 
 extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
@@ -95,14 +94,64 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
 
             fromView.alpha = 0.0
 
-            let fromRect: CGRect = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self), absoluteRect: self.delegate.transitionAbsoluteFromRect(self))
-            UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
-                self.imageView.frame = fromRect
-            }, completion: { [unowned self] (finished: Bool) in
-                fromView.alpha = 1.0
-                self.imageView.removeFromSuperview()
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
-            })
+            self.fromFrame = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self), absoluteRect: self.delegate.transitionAbsoluteFromRect(self))
+            if !transitionContext.isInteractive() {
+                UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
+                    self.imageView.frame = self.fromFrame
+                    }, completion: { [unowned self] (finished: Bool) in
+                        fromView.alpha = 1.0
+                        self.imageView.removeFromSuperview()
+                        transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+                    })
+            } else {
+                self.finishClosure = { [weak self] in
+                    fromView.alpha = 1.0
+                    self?.imageView.removeFromSuperview()
+                    transitionContext.completeTransition(true)
+                }
+
+                self.cancelClosure = { [weak self] in
+                    fromView.alpha = 1.0
+                    self?.imageView.removeFromSuperview()
+                    transitionContext.completeTransition(false)
+                }
+
+                UIView.animateWithDuration(self.direction.duration(), animations: {
+                    fromViewController.view.alpha = 0.0
+                })
+            }
+        }
+    }
+}
+
+protocol FAMFullscreenInteractive {
+    func updateInteractiveTransition(percentComplete: CGFloat) -> Void
+    func finishInteractiveTransition() -> Void
+    func cancelInteractiveTransition() -> Void
+}
+
+extension FAMFullscreenTransition: FAMFullscreenInteractive {
+    func updateInteractiveTransition(percentComplete: CGFloat) {
+        self.interactiveTransition.updateInteractiveTransition(percentComplete)
+    }
+
+    func finishInteractiveTransition() {
+        self.interactiveTransition.finishInteractiveTransition()
+
+        UIView.animateWithDuration(self.direction.duration(), animations: { [weak self] in
+            self?.imageView.frame = self?.fromFrame ?? CGRect.zero
+        }) { [weak self] (finished: Bool) in
+            self?.finishClosure()
+        }
+    }
+
+    func cancelInteractiveTransition() {
+        self.interactiveTransition.cancelInteractiveTransition()
+
+        UIView.animateWithDuration(self.direction.duration(), animations: { [weak self] in
+            self?.imageView.frame = self?.toFrame ?? CGRect.zero
+        }) { [weak self] (finished: Bool) in
+            self?.cancelClosure()
         }
     }
 }
