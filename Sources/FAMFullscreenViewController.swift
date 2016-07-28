@@ -126,8 +126,8 @@ public protocol FAMFullscreenViewControllerDataSource: class {
 ///FAMFullscreenViewController
 public class FAMFullscreenViewController: UINavigationController {
     private enum Constants {
-        static let closeBorder: CGFloat = 150.0
-        static let closeRate: CGFloat = 0.6
+        static let closeBorder: CGFloat = UIScreen.mainScreen().bounds.size.height / 1.5
+        static let closeRate: CGFloat = 0.35
     }
 
     /// mainViewController: FAMFullscreenMainViewController
@@ -185,28 +185,27 @@ public class FAMFullscreenViewController: UINavigationController {
 
     private var startPoint: CGPoint = CGPoint.zero
     func panGestureDidReceived(panGesture: UIPanGestureRecognizer) {
+        let currentPosition: CGPoint = panGesture.locationInView(panGesture.view)
+        let diff: CGFloat = currentPosition.y - self.startPoint.y
+        let percent: CGFloat = fabs(diff / Constants.closeBorder)
+
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             self.isInteractive = true
             self.startPoint = panGesture.locationInView(panGesture.view)
             self.dismissViewControllerAnimated(true, completion: nil)
         case UIGestureRecognizerState.Changed:
-            let currentPosition: CGPoint = panGesture.locationInView(panGesture.view)
-            let diff: CGFloat = currentPosition.y - self.startPoint.y
-            let percent: CGFloat = diff / Constants.closeBorder
             self.transition.interactiveTransition.updateInteractiveTransition(percent)
         case UIGestureRecognizerState.Cancelled:
             self.transition.interactiveTransition.cancelInteractiveTransition()
         case UIGestureRecognizerState.Ended:
-            let currentPosition: CGPoint = panGesture.locationInView(panGesture.view)
-            let diff: CGFloat = currentPosition.y - self.startPoint.y
-            let percent: CGFloat = diff / Constants.closeBorder
             if percent >= Constants.closeRate {
                 self.transition.interactiveTransition.finishInteractiveTransition()
             } else {
                 self.transition.interactiveTransition.cancelInteractiveTransition()
             }
         default:
+            self.transition.interactiveTransition.cancelInteractiveTransition()
             break
         }
     }

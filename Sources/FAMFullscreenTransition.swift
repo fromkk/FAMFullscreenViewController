@@ -83,11 +83,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
             }, completion: { [unowned self] (finished: Bool) in
-                if !transitionContext.transitionWasCancelled() && finished {
-                    toView.alpha = 1.0
-                } else {
-                    toView.alpha = 0.0
-                }
+                toView.alpha = 1.0
                 self.imageView.removeFromSuperview()
                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
             })
@@ -103,10 +99,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = fromRect
             }, completion: { [unowned self] (finished: Bool) in
-                print("\(self.direction) finished:\(finished)")
-                if transitionContext.transitionWasCancelled() {
-                    fromView.alpha = 1.0
-                }
+                fromView.alpha = 1.0
                 self.imageView.removeFromSuperview()
                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
             })
