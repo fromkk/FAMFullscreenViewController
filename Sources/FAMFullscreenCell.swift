@@ -15,11 +15,15 @@ public class FAMFullscreenCell: UICollectionViewCell {
             //TODO: display play video button when contentType is Video
         }
     }
+
+    /// content view controller
     private (set) public lazy var viewController: FAMFullscreenContentViewController = {
         let viewController: FAMFullscreenContentViewController = FAMFullscreenContentViewController()
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         return viewController
     }()
+
+    /// image
     public weak var image: UIImage? {
         didSet {
             self.viewController.image = self.image

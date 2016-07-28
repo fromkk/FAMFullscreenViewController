@@ -172,12 +172,14 @@ public class FAMFullscreenViewController: UINavigationController {
         }
     }
 
+    /// is parallax effect visible true
     public var showParallax: Bool = false {
         didSet {
             self.mainViewController.showParallax = self.showParallax
         }
     }
 
+    //MARK: interactive transitions
     private var isInteractive: Bool = false
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         UIPanGestureRecognizer(target: self, action: #selector(self.panGestureDidReceived))
@@ -211,6 +213,7 @@ public class FAMFullscreenViewController: UINavigationController {
         }
     }
 
+    //MARK: transition
     private lazy var transition: FAMFullscreenTransition = {
         let transition: FAMFullscreenTransition = FAMFullscreenTransition(direction: FAMFullscreenTransitionDirection.Open)
         transition.delegate = self
@@ -218,6 +221,7 @@ public class FAMFullscreenViewController: UINavigationController {
     }()
 }
 
+//MARK: lifecycle
 extension FAMFullscreenViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -225,6 +229,7 @@ extension FAMFullscreenViewController {
     }
 }
 
+// MARK: - UIViewControllerTransitioningDelegate
 extension FAMFullscreenViewController: UIViewControllerTransitioningDelegate {
     public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         self.transition.direction = FAMFullscreenTransitionDirection.Open
@@ -249,6 +254,7 @@ extension FAMFullscreenViewController: UIViewControllerTransitioningDelegate {
     }
 }
 
+// MARK: - FAMFullscreenTransitionDelegate
 extension FAMFullscreenViewController: FAMFullscreenTransitionDelegate {
     public func transitionFromRect(transiion: FAMFullscreenTransition) -> CGRect {
         return self.fullscreenDelegate?.fullscreenViewController(self, rectForIndexPath: self.selectedIndexPath) ?? CGRect.zero
@@ -275,6 +281,7 @@ extension FAMFullscreenViewController: FAMFullscreenTransitionDelegate {
     }
 }
 
+/// FAMFullscreenMainViewController
 public class FAMFullscreenMainViewController: UIViewController {
     private enum Constants {
         static let parallaxWidth: CGFloat = 40.0

@@ -19,7 +19,15 @@ public class FAMFullscreenContentViewController: UIViewController {
             self.imageView.image = self.image
         }
     }
-    public var indexPath: NSIndexPath!
+
+    /// indexPath
+    public var indexPath: NSIndexPath! {
+        didSet {
+            self.scrollView.zoomScale = Constants.minimumZoomScale
+        }
+    }
+
+    /// scrollView for zooming
     private (set) public lazy var scrollView: UIScrollView = {
         let scrollView: UIScrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -30,6 +38,8 @@ public class FAMFullscreenContentViewController: UIViewController {
         scrollView.delegate = self
         return scrollView
     }()
+
+    /// imageView
     private (set) public lazy var imageView: UIImageView = {
         let imageView: UIImageView = UIImageView()
         imageView.contentMode = UIViewContentMode.ScaleAspectFit

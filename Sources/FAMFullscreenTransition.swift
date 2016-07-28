@@ -8,6 +8,12 @@
 
 import UIKit
 
+/**
+ transition direction
+
+ - Open:  present view controller
+ - Close: dismiss view controller
+ */
 @objc public enum FAMFullscreenTransitionDirection: Int {
     case Open
     case Close
@@ -17,6 +23,7 @@ import UIKit
     }
 }
 
+/// transition delegate
 public protocol FAMFullscreenTransitionDelegate: class {
     func transitionFromRect(transiion: FAMFullscreenTransition) -> CGRect
     func transitionAbsoluteFromRect(transition: FAMFullscreenTransition) -> CGRect
@@ -24,6 +31,7 @@ public protocol FAMFullscreenTransitionDelegate: class {
     func adjustContentOffset(rect: CGRect, absoluteRect: CGRect) -> CGRect
 }
 
+/// FAMFullscreenTransition
 public class FAMFullscreenTransition: NSObject {
     public var direction: FAMFullscreenTransitionDirection
     public init(direction: FAMFullscreenTransitionDirection) {
@@ -31,6 +39,7 @@ public class FAMFullscreenTransition: NSObject {
         super.init()
     }
 
+    /// FAMFullscreenTransitionDelegate
     public var delegate: FAMFullscreenTransitionDelegate!
     lazy var imageView: UIImageView = {
         let imageView: UIImageView = UIImageView()
@@ -39,20 +48,28 @@ public class FAMFullscreenTransition: NSObject {
         return imageView
     }()
 
+    /// open frame
     private var toFrame: CGRect {
         let screenFrame: CGRect = UIApplication.sharedApplication().keyWindow?.bounds ?? UIScreen.mainScreen().bounds
         let imageSize: CGSize = self.imageView._famFullScreenSizeForAspectFit(screenFrame.size)
         let result: CGRect = CGRect(origin: CGPoint(x: (screenFrame.size.width - imageSize.width) / 2.0, y: (screenFrame.size.height - imageSize.height) / 2.0), size: imageSize)
         return result
     }
+    /// close frame
+    private var fromFrame: CGRect = CGRect.zero
 
+    /// interactive gesture start position
     private var startPosition: CGPoint = CGPoint.zero
+
+    /// interactive transition
     public lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = {
         UIPercentDrivenInteractiveTransition()
     }()
 
-    private var fromFrame: CGRect = CGRect.zero
+    /// when interactive transition finished called
     private var finishClosure: () -> Void = {}
+
+    /// when interactive transition cancelled called
     private var cancelClosure: () -> Void = {}
 }
 
@@ -115,10 +132,6 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
                     self?.imageView.removeFromSuperview()
                     transitionContext.completeTransition(false)
                 }
-
-                UIView.animateWithDuration(self.direction.duration(), animations: {
-                    fromViewController.view.alpha = 0.0
-                })
             }
         }
     }
