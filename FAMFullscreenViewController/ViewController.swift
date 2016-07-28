@@ -240,13 +240,20 @@ extension ViewController: FAMFullscreenViewControllerDelegate {
         return self.collectionView.convertRect(layoutAttribute.frame, toView: nil)
     }
 
-    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect {
-        let visibleRect: CGRect = CGRect(origin: self.collectionView.contentOffset, size: self.collectionView.bounds.size)
-        if visibleRect.contains(rect) {
+    func fullscreenViewController(viewController: FAMFullscreenViewController, absoluteRectForIndexPath indexPath: NSIndexPath) -> CGRect {
+        guard let layoutAttribute: UICollectionViewLayoutAttributes = self.collectionView.layoutAttributesForItemAtIndexPath(indexPath) else {
+            return CGRect.zero
+        }
+        return layoutAttribute.frame
+    }
+
+    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, absoluteRect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect {
+        let visibleRect: CGRect = CGRect(origin: self.collectionView.contentOffset, size: self.view.bounds.size)
+        if visibleRect.contains(absoluteRect) {
             return rect
         }
 
-        self.collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: visibleRect.origin.y > rect.origin.y ? UICollectionViewScrollPosition.Top : UICollectionViewScrollPosition.Bottom, animated: false)
+        self.collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: visibleRect.origin.y > absoluteRect.origin.y ? UICollectionViewScrollPosition.Top : UICollectionViewScrollPosition.Bottom, animated: false)
 
         return self.fullscreenViewController(viewController, rectForIndexPath: indexPath)
     }

@@ -84,6 +84,16 @@ public protocol FAMFullscreenViewControllerDataSource: class {
     func fullscreenViewController(viewController: FAMFullscreenViewController, rectForIndexPath indexPath: NSIndexPath) -> CGRect
 
     /**
+     absolute rect for indexPath
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter indexPath:      NSIndexPath
+
+     - returns: CGRect
+     */
+    func fullscreenViewController(viewController: FAMFullscreenViewController, absoluteRectForIndexPath indexPath: NSIndexPath) -> CGRect
+
+    /**
      get thumbnail image for indexPath.
 
      - parameter viewController: FAMFullscreenViewController
@@ -100,7 +110,7 @@ public protocol FAMFullscreenViewControllerDataSource: class {
 
      - returns: CGRect
      */
-    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect
+    func fullscreenViewController(viewController: FAMFullscreenViewController, adjustContentOffsetWithRect rect: CGRect, absoluteRect: CGRect, withIndexPath indexPath: NSIndexPath) -> CGRect
 
     /**
      called if changed displaying indexPath
@@ -187,8 +197,12 @@ extension FAMFullscreenViewController: FAMFullscreenTransitionDelegate {
         return self.fullscreenDelegate?.fullscreenViewController(self, rectForIndexPath: self.selectedIndexPath) ?? CGRect.zero
     }
 
-    public func adjustContentOffset(rect: CGRect) -> CGRect {
-        return self.fullscreenDelegate?.fullscreenViewController(self, adjustContentOffsetWithRect: rect, withIndexPath: self.selectedIndexPath) ?? CGRect.zero
+    public func transitionAbsoluteFromRect(transition: FAMFullscreenTransition) -> CGRect {
+        return self.fullscreenDelegate?.fullscreenViewController(self, absoluteRectForIndexPath: self.selectedIndexPath) ?? CGRect.zero
+    }
+
+    public func adjustContentOffset(rect: CGRect, absoluteRect: CGRect) -> CGRect {
+        return self.fullscreenDelegate?.fullscreenViewController(self, adjustContentOffsetWithRect: rect, absoluteRect: absoluteRect, withIndexPath: self.selectedIndexPath) ?? CGRect.zero
     }
 
     public func transitionImage(transition: FAMFullscreenTransition) -> UIImage? {

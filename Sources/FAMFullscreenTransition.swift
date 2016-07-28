@@ -24,8 +24,9 @@ import UIKit
 
 public protocol FAMFullscreenTransitionDelegate: class {
     func transitionFromRect(transiion: FAMFullscreenTransition) -> CGRect
+    func transitionAbsoluteFromRect(transition: FAMFullscreenTransition) -> CGRect
     func transitionImage(transition: FAMFullscreenTransition) -> UIImage?
-    func adjustContentOffset(rect: CGRect) -> CGRect
+    func adjustContentOffset(rect: CGRect, absoluteRect: CGRect) -> CGRect
 }
 
 public class FAMFullscreenTransition: NSObject {
@@ -72,7 +73,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             containerView.addSubview(self.imageView)
 
             self.imageView.image = self.delegate.transitionImage(self)
-            self.imageView.frame = self.delegate.transitionFromRect(self) ?? CGRect.zero
+            self.imageView.frame = self.delegate.transitionFromRect(self)
 
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
@@ -91,7 +92,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
 
             fromView.alpha = 0.0
 
-            let fromRect: CGRect = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self))
+            let fromRect: CGRect = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self), absoluteRect: self.delegate.transitionAbsoluteFromRect(self))
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = fromRect
             }, completion: { [unowned self] (finished: Bool) in
