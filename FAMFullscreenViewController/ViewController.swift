@@ -87,6 +87,12 @@ class ViewController: UIViewController {
 
         self.view.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(self.collectionView)
+        self.view.addConstraints([
+            NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 0.0),
+            NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Height, multiplier: 1.0, constant: 0.0),
+        ])
     }
 
     override func viewDidLoad() {
@@ -102,6 +108,14 @@ class ViewController: UIViewController {
             }
         }
         // Do any additional setup after loading the view, typically from a nib.
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        let length: CGFloat = (self.view.bounds.size.width - CGFloat(Constants.rows + 1) * Constants.margin) / CGFloat(Constants.rows)
+        self.collectionViewLayout.itemSize = CGSize(width: length, height: length)
+        self.collectionView.performBatchUpdates(nil, completion: nil)
     }
 
     private func requestPhotoLibrary(result: PhotoLibraryRequested) {
