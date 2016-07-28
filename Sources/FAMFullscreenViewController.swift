@@ -228,6 +228,8 @@ public class FAMFullscreenMainViewController: UIViewController {
         result.pagingEnabled = true
         result.dataSource = self
         result.delegate = self
+        result.showsVerticalScrollIndicator = false
+        result.showsHorizontalScrollIndicator = false
         return result
     }()
 
@@ -310,19 +312,20 @@ extension FAMFullscreenMainViewController {
         super.viewWillLayoutSubviews()
 
         if self.showParallax {
-            self.parallaxView.frame = CGRect(x: -Constants.parallaxWidth, y: 0.0, width: Constants.parallaxWidth, height: self.collectionView.frame.size.height)
+            self.parallaxView.frame = CGRect(x: -Constants.parallaxWidth, y: 0.0, width: Constants.parallaxWidth, height: self.view.bounds.size.height)
         }
-        self.scrollToIndexPath()
+        self.scrollToIndexPath(self.selectedIndexPath)
     }
 
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
 
-    private func scrollToIndexPath() {
-        self.collectionView.reloadData()
-        self.collectionView.scrollToItemAtIndexPath(self.selectedIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: false)
-        self.collectionView.setNeedsDisplay()
+    private func scrollToIndexPath(indexPath: NSIndexPath) {
+        self.collectionView.performBatchUpdates({ [unowned self] in
+            self.collectionViewLayout.itemSize = self.view.bounds.size
+            self.collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: false)
+        }, completion: nil)
     }
 
     @objc private func close() {
@@ -438,10 +441,4 @@ extension FAMFullscreenMainViewController: UICollectionViewDataSource {
 
 extension FAMFullscreenMainViewController: UICollectionViewDelegate {
 
-}
-
-extension FAMFullscreenMainViewController: UICollectionViewDelegateFlowLayout {
-    public func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        return self.collectionView.bounds.size
-    }
 }
