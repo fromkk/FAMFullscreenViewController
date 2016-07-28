@@ -50,6 +50,11 @@ public class FAMFullscreenTransition: NSObject {
         let result: CGRect = CGRect(origin: CGPoint(x: (screenFrame.size.width - imageSize.width) / 2.0, y: (screenFrame.size.height - imageSize.height) / 2.0), size: imageSize)
         return result
     }
+
+    private var startPosition: CGPoint = CGPoint.zero
+    public lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = {
+        UIPercentDrivenInteractiveTransition()
+    }()
 }
 
 extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
@@ -78,11 +83,13 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
             }, completion: { [unowned self] (finished: Bool) in
-                if finished {
-                    self.imageView.removeFromSuperview()
+                if !transitionContext.transitionWasCancelled() && finished {
                     toView.alpha = 1.0
-                    transitionContext.completeTransition(true)
+                } else {
+                    toView.alpha = 0.0
                 }
+                self.imageView.removeFromSuperview()
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
             })
         } else {
             containerView.addSubview(self.imageView)
@@ -96,10 +103,12 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
                 self.imageView.frame = fromRect
             }, completion: { [unowned self] (finished: Bool) in
-                if finished {
-                    self.imageView.removeFromSuperview()
-                    transitionContext.completeTransition(true)
+                print("\(self.direction) finished:\(finished)")
+                if transitionContext.transitionWasCancelled() {
+                    fromView.alpha = 1.0
                 }
+                self.imageView.removeFromSuperview()
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
             })
         }
     }

@@ -125,6 +125,11 @@ public protocol FAMFullscreenViewControllerDataSource: class {
 
 ///FAMFullscreenViewController
 public class FAMFullscreenViewController: UINavigationController {
+    private enum Constants {
+        static let closeBorder: CGFloat = 150.0
+        static let closeRate: CGFloat = 0.6
+    }
+
     /// mainViewController: FAMFullscreenMainViewController
     private (set) public var mainViewController: FAMFullscreenMainViewController!
     /// selectedIndexPath: NSIndexPath
@@ -173,11 +178,51 @@ public class FAMFullscreenViewController: UINavigationController {
         }
     }
 
+    private var isInteractive: Bool = false
+    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+        UIPanGestureRecognizer(target: self, action: #selector(self.panGestureDidReceived))
+    }()
+
+    private var startPoint: CGPoint = CGPoint.zero
+    func panGestureDidReceived(panGesture: UIPanGestureRecognizer) {
+        switch panGesture.state {
+        case UIGestureRecognizerState.Began:
+            self.isInteractive = true
+            self.startPoint = panGesture.locationInView(panGesture.view)
+            self.dismissViewControllerAnimated(true, completion: nil)
+        case UIGestureRecognizerState.Changed:
+            let currentPosition: CGPoint = panGesture.locationInView(panGesture.view)
+            let diff: CGFloat = currentPosition.y - self.startPoint.y
+            let percent: CGFloat = diff / Constants.closeBorder
+            self.transition.interactiveTransition.updateInteractiveTransition(percent)
+        case UIGestureRecognizerState.Cancelled:
+            self.transition.interactiveTransition.cancelInteractiveTransition()
+        case UIGestureRecognizerState.Ended:
+            let currentPosition: CGPoint = panGesture.locationInView(panGesture.view)
+            let diff: CGFloat = currentPosition.y - self.startPoint.y
+            let percent: CGFloat = diff / Constants.closeBorder
+            if percent >= Constants.closeRate {
+                self.transition.interactiveTransition.finishInteractiveTransition()
+            } else {
+                self.transition.interactiveTransition.cancelInteractiveTransition()
+            }
+        default:
+            break
+        }
+    }
+
     private lazy var transition: FAMFullscreenTransition = {
         let transition: FAMFullscreenTransition = FAMFullscreenTransition(direction: FAMFullscreenTransitionDirection.Open)
         transition.delegate = self
         return transition
     }()
+}
+
+extension FAMFullscreenViewController {
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        self.mainViewController.view.addGestureRecognizer(self.panGestureRecognizer)
+    }
 }
 
 extension FAMFullscreenViewController: UIViewControllerTransitioningDelegate {
@@ -189,6 +234,18 @@ extension FAMFullscreenViewController: UIViewControllerTransitioningDelegate {
     public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         self.transition.direction = FAMFullscreenTransitionDirection.Close
         return self.transition
+    }
+
+    public func interactionControllerForPresentation(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return nil
+    }
+
+    public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        if self.isInteractive {
+            self.transition.direction = FAMFullscreenTransitionDirection.Close
+            return self.transition.interactiveTransition
+        }
+        return nil
     }
 }
 
@@ -292,6 +349,7 @@ extension FAMFullscreenMainViewController {
     public override func loadView() {
         super.loadView()
 
+        self.view.userInteractionEnabled = true
         self.view.addSubview(self.collectionView)
         self.view.addConstraints([
             NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant: 0.0),
@@ -343,7 +401,10 @@ extension FAMFullscreenMainViewController {
     }
 
     @objc private func close() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        if let navigationController: FAMFullscreenViewController = self.navigationController as? FAMFullscreenViewController {
+            navigationController.isInteractive = false
+        }
+        self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
     }
 }
 
