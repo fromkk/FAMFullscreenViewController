@@ -222,7 +222,9 @@ public class FAMFullscreenViewController: UINavigationController {
     //MARK: interactive transitions
     private var isInteractive: Bool = false
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
-        UIPanGestureRecognizer(target: self, action: #selector(self.panGestureDidReceived))
+        let gesture: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.panGestureDidReceived))
+        gesture.delegate = self
+        return gesture
     }()
 
     private var startPoint: CGPoint = CGPoint.zero
@@ -369,6 +371,21 @@ extension FAMFullscreenViewController: FAMFullscreenTransitionDelegate {
         return UIApplication.sharedApplication().keyWindow?.bounds ?? UIScreen.mainScreen().bounds
     }
 }
+
+// MARK: - UIGestureRecognizerDelegate
+extension FAMFullscreenViewController: UIGestureRecognizerDelegate {
+    public func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == self.panGestureRecognizer {
+            let velocity: CGPoint = self.panGestureRecognizer.velocityInView(self.panGestureRecognizer.view)
+            let slope: CGFloat = fabs(velocity.y) / fabs(velocity.x)
+            let radian: CGFloat = atan(slope)
+            let angle: CGFloat = radian * 180.0 / CGFloat(M_PI)
+            return !(angle >= 0.0 && angle <= 30.0)
+        }
+        return true
+    }
+}
+
 
 /// FAMFullscreenMainViewController
 public class FAMFullscreenMainViewController: UIViewController {
