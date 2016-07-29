@@ -99,13 +99,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         self.requestPhotoLibrary { [unowned self] (result: PhotoLibraryRequestResult) in
-            if result == PhotoLibraryRequestResult.Success {
-                guard let collection: PHAssetCollection = PHAssetCollection.fetchAssetCollectionsWithType(PHAssetCollectionType.SmartAlbum, subtype: PHAssetCollectionSubtype.SmartAlbumUserLibrary, options: nil).firstObject as? PHAssetCollection else {
-                    return
+            dispatch_async(dispatch_get_main_queue(), {
+                if result == PhotoLibraryRequestResult.Success {
+                    guard let collection: PHAssetCollection = PHAssetCollection.fetchAssetCollectionsWithType(PHAssetCollectionType.SmartAlbum, subtype: PHAssetCollectionSubtype.SmartAlbumUserLibrary, options: nil).firstObject as? PHAssetCollection else {
+                        return
+                    }
+                    self.fetchResult = PHAsset.fetchAssetsInAssetCollection(collection, options: nil)
+                    self.collectionView.reloadData()
                 }
-                self.fetchResult = PHAsset.fetchAssetsInAssetCollection(collection, options: nil)
-                self.collectionView.reloadData()
-            }
+            })
         }
         // Do any additional setup after loading the view, typically from a nib.
     }
