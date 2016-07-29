@@ -234,10 +234,25 @@ public class FAMFullscreenViewController: UINavigationController {
     public func registerContentImageViewType(contentImageViewType: UIImageView.Type) -> Void {
         self.mainViewController.contentImageViewType = contentImageViewType
     }
+
+    public var backgroundColor: UIColor? {
+        get {
+            return self.mainViewController.collectionViewBackgroundColor
+        }
+        set (newValue) {
+            self.mainViewController.collectionViewBackgroundColor = newValue
+        }
+    }
 }
 
 //MARK: lifecycle
 extension FAMFullscreenViewController {
+    public override func loadView() {
+        super.loadView()
+
+        self.view.backgroundColor = UIColor.clearColor()
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.mainViewController.view.addGestureRecognizer(self.panGestureRecognizer)
@@ -326,6 +341,14 @@ public class FAMFullscreenMainViewController: UIViewController {
         static let parallaxWidth: CGFloat = 40.0
     }
 
+    internal var collectionViewBackgroundColor: UIColor? = UIColor.blackColor() {
+        didSet {
+            if self.isViewLoaded() {
+                self.collectionView.backgroundColor = self.collectionViewBackgroundColor
+            }
+        }
+    }
+
     /// collectionViewLayout
     private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -406,6 +429,7 @@ extension FAMFullscreenMainViewController {
 
         self.view.userInteractionEnabled = true
         self.view.addSubview(self.collectionView)
+        self.collectionView.backgroundColor = self.collectionViewBackgroundColor
         self.view.addConstraints([
             NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1.0, constant: 0.0),
             NSLayoutConstraint(item: self.collectionView, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterY, multiplier: 1.0, constant: 0.0),

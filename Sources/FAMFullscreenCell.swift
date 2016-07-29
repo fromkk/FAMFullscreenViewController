@@ -45,3 +45,11 @@ public class FAMFullscreenCell: UICollectionViewCell {
         }
     }
 }
+
+extension FAMFullscreenCell {
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+
+        self.backgroundColor = UIColor.clearColor()
+    }
+}

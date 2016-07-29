@@ -195,6 +195,7 @@ extension ViewController: UICollectionViewDelegate {
         viewController.fullscreenDelegate = self
         viewController.showParallax = true
         viewController.registerContentImageViewType(ContentImageView.self)
+        viewController.backgroundColor = UIColor.whiteColor()
         self.presentViewController(viewController, animated: true, completion: nil)
 
         self.selectedIndexPath = indexPath
