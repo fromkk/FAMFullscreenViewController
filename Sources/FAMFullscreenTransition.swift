@@ -19,7 +19,18 @@ import UIKit
     case Close
 
     public func duration() -> NSTimeInterval {
-        return 0.33
+        switch self {
+        case .Open:
+            return 0.35
+        case .Close:
+            return 0.5
+        }
+    }
+}
+
+extension UIView {
+    static func _famAnimationWithDuration(duration: NSTimeInterval, animations: () -> Void, completion: ((finished: Bool) -> Void)?) {
+        UIView.animateWithDuration(duration, delay: 0.0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: animations, completion: completion)
     }
 }
 
@@ -96,7 +107,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             self.imageView.image = self.delegate.transitionImage(self)
             self.imageView.frame = self.delegate.transitionFromRect(self)
 
-            UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
+            UIView._famAnimationWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
             }, completion: { [unowned self] (finished: Bool) in
                 toView.alpha = 1.0
@@ -113,7 +124,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
 
             self.fromFrame = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self), absoluteRect: self.delegate.transitionAbsoluteFromRect(self))
             if !transitionContext.isInteractive() {
-                UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
+                UIView._famAnimationWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
                     self.imageView.frame = self.fromFrame
                     }, completion: { [unowned self] (finished: Bool) in
                         fromView.alpha = 1.0
@@ -153,7 +164,7 @@ extension FAMFullscreenTransition: FAMFullscreenInteractive {
     func finishInteractiveTransition() {
         self.interactiveTransition.finishInteractiveTransition()
 
-        UIView.animateWithDuration(self.direction.duration(), animations: { [weak self] in
+        UIView._famAnimationWithDuration(self.direction.duration(), animations: { [weak self] in
             self?.imageView.frame = self?.fromFrame ?? CGRect.zero
         }) { [weak self] (finished: Bool) in
             self?.finishClosure()
@@ -163,7 +174,7 @@ extension FAMFullscreenTransition: FAMFullscreenInteractive {
     func cancelInteractiveTransition() {
         self.interactiveTransition.cancelInteractiveTransition()
 
-        UIView.animateWithDuration(self.direction.duration(), animations: { [weak self] in
+        UIView._famAnimationWithDuration(self.direction.duration(), animations: { [weak self] in
             self?.imageView.frame = self?.toFrame ?? CGRect.zero
         }) { [weak self] (finished: Bool) in
             self?.cancelClosure()
