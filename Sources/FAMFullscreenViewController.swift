@@ -224,6 +224,11 @@ public class FAMFullscreenViewController: UINavigationController {
         transition.delegate = self
         return transition
     }()
+
+    //MARK: register content view controller type
+    public func registerContentViewControllerType(contentViewControllerType: FAMFullscreenContentViewController.Type) -> Void {
+        self.mainViewController.contentViewControllerType = contentViewControllerType
+    }
 }
 
 //MARK: lifecycle
@@ -353,6 +358,10 @@ public class FAMFullscreenMainViewController: UIViewController {
 
     public weak var dataSource: FAMFullscreenViewControllerDataSource?
     public weak var delegate: FAMFullscreenViewControllerDelegate?
+    public var contentViewControllerType: FAMFullscreenContentViewController.Type = FAMFullscreenContentViewController.self
+    private var contentViewController: FAMFullscreenContentViewController {
+        return self.contentViewControllerType.init()
+    }
 
     /// parallax
     public var showParallax: Bool = false {
@@ -530,12 +539,14 @@ extension FAMFullscreenMainViewController: UICollectionViewDataSource {
             fatalError("cell create failed.")
         }
 
-        if let _ = cell.viewController.parentViewController {
-            cell.viewController.willMoveToParentViewController(nil)
-            cell.viewController.removeFromParentViewController()
-            cell.viewController.didMoveToParentViewController(nil)
+        if let viewController: UIViewController = cell.viewController, _ = viewController.parentViewController {
+            viewController.willMoveToParentViewController(nil)
+            viewController.removeFromParentViewController()
+            viewController.didMoveToParentViewController(nil)
         }
 
+        let contentViewController: FAMFullscreenContentViewController = self.contentViewController
+        cell.viewController = contentViewController
         self.dataSource?.fullscreenViewController(self, requestImageAtIndexPath: indexPath, request: { (result) in
             switch result {
             case FAMFullscreenImageRequestResult.Success(let image):
@@ -545,10 +556,10 @@ extension FAMFullscreenMainViewController: UICollectionViewDataSource {
             }
         })
 
-        cell.viewController.indexPath = indexPath
-        cell.viewController.willMoveToParentViewController(self)
-        self.addChildViewController(cell.viewController)
-        cell.viewController.didMoveToParentViewController(self)
+        contentViewController.indexPath = indexPath
+        contentViewController.willMoveToParentViewController(self)
+        self.addChildViewController(contentViewController)
+        contentViewController.didMoveToParentViewController(self)
 
         return cell
     }
