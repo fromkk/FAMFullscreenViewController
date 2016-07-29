@@ -124,12 +124,14 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
                 self.finishClosure = { [weak self] in
                     fromView.alpha = 1.0
                     self?.imageView.removeFromSuperview()
+                    self?.imageView.transform = CGAffineTransformIdentity
                     transitionContext.completeTransition(true)
                 }
 
                 self.cancelClosure = { [weak self] in
                     fromView.alpha = 1.0
                     self?.imageView.removeFromSuperview()
+                    self?.imageView.transform = CGAffineTransformIdentity
                     transitionContext.completeTransition(false)
                 }
             }
