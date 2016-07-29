@@ -122,9 +122,44 @@ public protocol FAMFullscreenViewControllerDataSource: class {
      */
     optional func fullscreenViewController(viewController: FAMFullscreenMainViewController, didChangeIndexPath indexPath: NSIndexPath) -> Void
 
+    /**
+     called fullscreenViewController view will appear
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter indexPath:      NSindexPath
+
+     - returns: void
+     */
     optional func fullscreenViewController(viewController: FAMFullscreenViewController, willShowWithIndexPath indexPath: NSIndexPath) -> Void
+
+    /**
+     called fullscreenViewController view did appear
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter indexPath:      NSindexPath
+
+     - returns: void
+     */
     optional func fullscreenViewController(viewController: FAMFullscreenViewController, didShowWithIndexPath indexPath: NSIndexPath) -> Void
+
+    /**
+     called fullscreenViewController view will disappear
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter indexPath:      NSindexPath
+
+     - returns: void
+     */
     optional func fullscreenViewController(viewController: FAMFullscreenViewController, willHideWithIndexPath indexPath: NSIndexPath) -> Void
+
+    /**
+     called fullscreenViewController view dis disappear
+
+     - parameter viewController: FAMFullscreenViewController
+     - parameter indexPath:      NSindexPath
+
+     - returns: void
+     */
     optional func fullscreenViewController(viewController: FAMFullscreenViewController, didHideithIndexPath indexPath: NSIndexPath) -> Void
 }
 
