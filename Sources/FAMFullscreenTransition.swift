@@ -96,7 +96,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
             self.imageView.image = self.delegate.transitionImage(self)
             self.imageView.frame = self.delegate.transitionFromRect(self)
 
-            UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
+            UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
                 self.imageView.frame = self.toFrame
             }, completion: { [unowned self] (finished: Bool) in
                 toView.alpha = 1.0
@@ -113,7 +113,7 @@ extension FAMFullscreenTransition: UIViewControllerAnimatedTransitioning {
 
             self.fromFrame = self.delegate.adjustContentOffset(self.delegate.transitionFromRect(self), absoluteRect: self.delegate.transitionAbsoluteFromRect(self))
             if !transitionContext.isInteractive() {
-                UIView.animateWithDuration(self.direction.duration(), animations: { [unowned self] in
+                UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: { [unowned self] in
                     self.imageView.frame = self.fromFrame
                     }, completion: { [unowned self] (finished: Bool) in
                         fromView.alpha = 1.0
