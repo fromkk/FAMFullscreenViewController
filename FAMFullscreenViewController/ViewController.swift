@@ -144,6 +144,8 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    private var selectedIndexPath: NSIndexPath?
 }
 
 extension ViewController: UICollectionViewDataSource {
@@ -193,6 +195,8 @@ extension ViewController: UICollectionViewDelegate {
         viewController.fullscreenDelegate = self
         viewController.showParallax = true
         self.presentViewController(viewController, animated: true, completion: nil)
+
+        self.selectedIndexPath = indexPath
     }
 }
 
@@ -264,5 +268,31 @@ extension ViewController: FAMFullscreenViewControllerDelegate {
         }
 
         return cell.imageView.image
+    }
+
+    func fullscreenViewController(viewController: FAMFullscreenMainViewController, didChangeIndexPath indexPath: NSIndexPath) {
+        if let selectedIndexPath: NSIndexPath = self.selectedIndexPath, cell: ViewControllerCell = self.collectionView.cellForItemAtIndexPath(selectedIndexPath) as? ViewControllerCell {
+            cell.alpha = 1.0
+        }
+        self.selectedIndexPath = indexPath
+
+        guard let cell: ViewControllerCell = self.collectionView.cellForItemAtIndexPath(indexPath) as? ViewControllerCell else {
+            return
+        }
+        cell.alpha = 0.0
+    }
+
+    func fullscreenViewController(viewController: FAMFullscreenViewController, willShowWithIndexPath indexPath: NSIndexPath) {
+        guard let cell: ViewControllerCell = self.collectionView.cellForItemAtIndexPath(indexPath) as? ViewControllerCell else {
+            return
+        }
+        cell.alpha = 0.0
+    }
+
+    func fullscreenViewController(viewController: FAMFullscreenViewController, didHideithIndexPath indexPath: NSIndexPath) {
+        guard let cell: ViewControllerCell = self.collectionView.cellForItemAtIndexPath(indexPath) as? ViewControllerCell else {
+            return
+        }
+        cell.alpha = 1.0
     }
 }

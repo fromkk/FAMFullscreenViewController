@@ -120,7 +120,12 @@ public protocol FAMFullscreenViewControllerDataSource: class {
 
      - returns: Void
      */
-    optional func fullscreenViewController(viewController: FAMFullscreenMainViewController, didShowIndexPath indexPath: NSIndexPath) -> Void
+    optional func fullscreenViewController(viewController: FAMFullscreenMainViewController, didChangeIndexPath indexPath: NSIndexPath) -> Void
+
+    optional func fullscreenViewController(viewController: FAMFullscreenViewController, willShowWithIndexPath indexPath: NSIndexPath) -> Void
+    optional func fullscreenViewController(viewController: FAMFullscreenViewController, didShowWithIndexPath indexPath: NSIndexPath) -> Void
+    optional func fullscreenViewController(viewController: FAMFullscreenViewController, willHideWithIndexPath indexPath: NSIndexPath) -> Void
+    optional func fullscreenViewController(viewController: FAMFullscreenViewController, didHideithIndexPath indexPath: NSIndexPath) -> Void
 }
 
 ///FAMFullscreenViewController
@@ -226,6 +231,30 @@ extension FAMFullscreenViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.mainViewController.view.addGestureRecognizer(self.panGestureRecognizer)
+    }
+
+    public override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.fullscreenDelegate?.fullscreenViewController?(self, willShowWithIndexPath: self.selectedIndexPath)
+    }
+
+    public override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.fullscreenDelegate?.fullscreenViewController?(self, didShowWithIndexPath: self.selectedIndexPath)
+    }
+
+    public override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.fullscreenDelegate?.fullscreenViewController?(self, willHideWithIndexPath: self.selectedIndexPath)
+    }
+
+    public override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        self.fullscreenDelegate?.fullscreenViewController?(self, didHideithIndexPath: self.selectedIndexPath)
     }
 }
 
@@ -477,8 +506,12 @@ extension FAMFullscreenMainViewController: UIScrollViewDelegate {
             return
         }
 
+        if self.selectedIndexPath == indexPath {
+            return
+        }
+
         self.selectedIndexPath = indexPath
-        self.delegate?.fullscreenViewController?(self, didShowIndexPath: indexPath)
+        self.delegate?.fullscreenViewController?(self, didChangeIndexPath: indexPath)
     }
 }
 
