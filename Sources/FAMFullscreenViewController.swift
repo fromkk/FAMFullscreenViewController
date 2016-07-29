@@ -229,6 +229,11 @@ public class FAMFullscreenViewController: UINavigationController {
     public func registerContentViewControllerType(contentViewControllerType: FAMFullscreenContentViewController.Type) -> Void {
         self.mainViewController.contentViewControllerType = contentViewControllerType
     }
+
+    //MARK: register content image view type
+    public func registerContentImageViewType(contentImageViewType: UIImageView.Type) -> Void {
+        self.mainViewController.contentImageViewType = contentImageViewType
+    }
 }
 
 //MARK: lifecycle
@@ -358,10 +363,15 @@ public class FAMFullscreenMainViewController: UIViewController {
 
     public weak var dataSource: FAMFullscreenViewControllerDataSource?
     public weak var delegate: FAMFullscreenViewControllerDelegate?
-    public var contentViewControllerType: FAMFullscreenContentViewController.Type = FAMFullscreenContentViewController.self
+
+    /// content view controller type
+    var contentViewControllerType: FAMFullscreenContentViewController.Type = FAMFullscreenContentViewController.self
     private var contentViewController: FAMFullscreenContentViewController {
         return self.contentViewControllerType.init()
     }
+
+    /// content image view type
+    var contentImageViewType: UIImageView.Type = UIImageView.self
 
     /// parallax
     public var showParallax: Bool = false {
@@ -546,6 +556,8 @@ extension FAMFullscreenMainViewController: UICollectionViewDataSource {
         }
 
         let contentViewController: FAMFullscreenContentViewController = self.contentViewController
+        contentViewController.imageViewType = self.contentImageViewType
+
         cell.viewController = contentViewController
         self.dataSource?.fullscreenViewController(self, requestImageAtIndexPath: indexPath, request: { (result) in
             switch result {

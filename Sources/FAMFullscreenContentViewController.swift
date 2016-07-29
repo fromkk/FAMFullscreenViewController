@@ -40,8 +40,9 @@ public class FAMFullscreenContentViewController: UIViewController {
     }()
 
     /// imageView
+    public var imageViewType: UIImageView.Type = UIImageView.self
     private (set) public lazy var imageView: UIImageView = {
-        let imageView: UIImageView = UIImageView()
+        let imageView: UIImageView = self.imageViewType.init()
         imageView.contentMode = UIViewContentMode.ScaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView

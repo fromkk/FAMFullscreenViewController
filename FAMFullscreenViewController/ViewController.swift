@@ -194,6 +194,7 @@ extension ViewController: UICollectionViewDelegate {
         viewController.fullscreenDataSource = self
         viewController.fullscreenDelegate = self
         viewController.showParallax = true
+        viewController.registerContentImageViewType(ContentImageView.self)
         self.presentViewController(viewController, animated: true, completion: nil)
 
         self.selectedIndexPath = indexPath

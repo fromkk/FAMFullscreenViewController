@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F1344A01D4AF4B700294651 /* imageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F13449F1D4AF4B700294651 /* imageView.swift */; };
 		4F7E7E0F1D48791A000B59E4 /* FAMFullscreenTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E7E0E1D48791A000B59E4 /* FAMFullscreenTransition.swift */; };
 		4F7E7E111D48B0C4000B59E4 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E7E101D48B0C4000B59E4 /* UIImageExtension.swift */; };
 		4F96A45C1D47412200E99EC5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F96A45B1D47412200E99EC5 /* AppDelegate.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4F13449F1D4AF4B700294651 /* imageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = imageView.swift; sourceTree = "<group>"; };
 		4F7E7E0E1D48791A000B59E4 /* FAMFullscreenTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAMFullscreenTransition.swift; sourceTree = "<group>"; };
 		4F7E7E101D48B0C4000B59E4 /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		4F96A4581D47412200E99EC5 /* FAMFullscreenViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FAMFullscreenViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +116,7 @@
 				4F96A4621D47412200E99EC5 /* Assets.xcassets */,
 				4F96A4641D47412200E99EC5 /* LaunchScreen.storyboard */,
 				4F96A4671D47412200E99EC5 /* Info.plist */,
+				4F13449F1D4AF4B700294651 /* imageView.swift */,
 			);
 			path = FAMFullscreenViewController;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F1344A01D4AF4B700294651 /* imageView.swift in Sources */,
 				4F96A45E1D47412200E99EC5 /* ViewController.swift in Sources */,
 				4F96A48D1D47430900E99EC5 /* FAMFullscreenCell.swift in Sources */,
 				4F7E7E111D48B0C4000B59E4 /* UIImageExtension.swift in Sources */,
